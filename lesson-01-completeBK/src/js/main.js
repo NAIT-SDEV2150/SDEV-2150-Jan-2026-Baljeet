@@ -26,7 +26,6 @@ const output = document.querySelector('#output');
 //const btnRun = document.querySelector('#btn-run');
 const btnClear = document.querySelector('#btn-clear');
 const btnRun = document.getElementById("btn-run");
-const taskInput = document.getElementById("txt-task")
 
 ///   document → represents the web page
 ///   getElementById() → finds one specific element
@@ -58,19 +57,13 @@ const taskInput = document.getElementById("txt-task");
 
 // TODO: Create a constant named course
 const course = 'SDEV2150';
-let baseSalary = 1000;
-let variableComponent = 50;
-let netSalary = baseSalary + variableComponent;
 // TODO: Create a variable named topic
-let topic = 'JavaScript review/ Web Component';
+let topic = 'JavaScript review';
 // TODO: Use a template string to display both values
 // Cleaner than string concatenation, ${} inserts variables
 
 output.innerHTML = `<p>Course: ${course} | Topic: ${topic}</p>`;
-output.innerHTML += `<p> Net final salary offered to you is: ${netSalary} </p>`;
 // Listen for a click on the "Run Demo" button
-
-
 
 /*
 btnRun.addEventListener("click", () => {
@@ -104,9 +97,6 @@ function add(a, b) {
   return a + b;
 }
 
-function sub(a, b) {
-  return a - b;
-}
 
 // TODO: Create an arrow function formatResult(label, value)
 // arrow function:are shorter, Common in modern JS & React. 
@@ -117,8 +107,8 @@ const formatResult = (label, value) => {
   return `${label}: ${value}`;
 }
 
-output.innerHTML += `<p>${formatResult('15 + 17', add(15, 17))}</p>`;
-output.innerHTML += `<p>${formatResult('20 - 17', sub(20, 17))}</p>`;
+output.innerHTML += `<p>${formatResult('2 + 3', add(2, 3))}</p>`;
+
 // TODO: Call the functions and display the result
 
 /*
@@ -142,17 +132,10 @@ btnRun.addEventListener("click", () => {
 /// An array is a list that stores multiple values in order.
 
 const tasks = [
-  { title: 'Install dependencies', done: true, priority: "high" },
+  { title: 'Install dependencies', done: true },
   { title: 'Run dev server', done: true },
   { title: 'Complete the demo', done: false },
 ];
-
-let myList = [
-  "Oranges", 1
-]
-
-output.innerHTML += `<p>  Task is ${tasks[0].title} and its status is ${tasks[0].done}, priority was ${tasks[0].priority}</p>`;
-
 
 /// tasks is an array, It holds multiple items, Each item represents one task
 /// An object groups related data using key–value pairs.
@@ -312,8 +295,8 @@ btnAdd.addEventListener('click', () => {
 
 // 3. Add event delegation to the <ul>
 //    - When a list item is clicked:
-//       Toggle the task
-//       Re-render the list
+//      * Toggle the task
+//      * Re-render the list
 
 // 4. Stretch goals:
 //    - Display a chekcbox next to each task to represent done/todo 
@@ -322,4 +305,3 @@ btnAdd.addEventListener('click', () => {
 //      the task (notice we aren't using a form
 //    - Display a summary line above the list
 //      e.g. "Completed: 2 of 3"
-

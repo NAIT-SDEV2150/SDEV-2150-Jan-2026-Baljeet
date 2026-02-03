@@ -86,7 +86,7 @@ class ResourceResults extends HTMLElement {
   // Private method to fetch data from the provided source URL
   async #fetchData(source) {
     try {
-      const response = await fetch(source); //The Fetch API returns a Promise
+      const response = await fetch(source);
       if (!response.ok) {
         throw new Error(`Network response was not ok: ${response.statusText}`);
       }
