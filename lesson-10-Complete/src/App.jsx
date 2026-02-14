@@ -11,12 +11,25 @@ function App() {
     //   <Results />
     //   <Details />
     // </PageLayout>
-    <PageLayout
-      header={<Header tagline="Find the right resources, right away" />}
-      left={<Filters />}
-      middle={<Results />}
-      right={<Details />}
-    />
+    // <PageLayout
+    //   header={<Header tagline="Find the right resources, right away" />}
+    //   left={<Filters />}
+    //   middle={<Results />}
+    //   right={<Details />}
+    // />
+    <PageLayout header={<Header tagline="Find the right resources, right away" />}>
+      <aside className="md:col-span-3 lg:col-span-1">
+       <Filters />
+      </aside>
+
+      <section className="md:col-span-2 lg:col-span-1">
+        <Results />
+      </section>
+
+        <aside className="md:col-span-1 lg:col-span-1">
+          <Details />
+        </aside>
+</PageLayout>
 
   );
 }
