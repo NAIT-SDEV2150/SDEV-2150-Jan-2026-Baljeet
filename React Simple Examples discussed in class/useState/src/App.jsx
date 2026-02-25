@@ -4,41 +4,71 @@ import './App.css'
 
 function App() {
  
+  // Normal variable (NOT React state), count resets to 0 on every re-render
   let count = 0;
-  //let fruit = "Apple"
+  
+  // useState returns an ARRAY with 2 elements: [ currentStateValue, functionToUpdateState ]
   const myvar = useState(0);
-  const counter = myvar[0];
-  const setCounter = myvar[1];
+
+  // Extracting elements manually (old-school way)
+  const counter = myvar[0];   // current state value
+  const setCounter = myvar[1];  // function to update state
+
+  // Modern syntax (array destructuring)
   //const [counter,setCounter] = useState(0)
+
+  // Object state example
+  // Storing multiple values inside ONE state object
   const [user,setUser]= useState({userName: "Baljeet", course : "SDEV", code: 2210});
 
-  
+  // Console logs to show how useState works internally
   console.log(`Myvar has two array elements :  ${myvar}`);
   console.log(`First element in My var i.e. counter :  ${counter}`);
+
+  // ================================
+  // FUNCTION: Increment values
+  // ================================
+  
   const increment = () => {
-  // Update the state using the previous value to prevent issues with multiple updates
+    // Update the state using the previous value to prevent issues with multiple updates
+    
+    console.log(count);
+    //console.log(fruit);
   
-  console.log(count);
-  //console.log(fruit);
+    //Updating normal variable, This WILL NOT persist after re-render
+    count = count + 1; 
+
+    // Updating React state, This WILL persist and trigger re-render
+    setCounter(counter+1);
   
-  count = count + 1; 
-  setCounter(counter+1);
+    //fruit = "Banana"
   
-  //fruit = "Banana"
-  
-  console.log(count);
-  //console.log(fruit);
+   console.log(count);
+    //console.log(fruit);
   };
 
 
+  // ================================
+  // FUNCTION: Update object state
+  // ================================
 
- 
+  function updateUser()
+  {
+    // IMPORTANT: Never overwrite object state directly
+    // Always copy previous state using spread operator (...)
+    setUser(prev => ({
+         ...prev,                            // copy existing properties
+         userName: "Baljeet Kaur"}));       // update only one field
+  } 
   return (
     <>
       <div className="flex items-center justify-between space-x-4">
-        <h1> value of count is : {count} </h1> 
-        <h1 className='text-sky-400'> value of counter is : {counter} </h1>
+        <h2> value of count is : {count} </h2> 
+        <h2 className='text-sky-400'> value of counter is : {counter} </h2>
+        <h2 className='text-yellow-200'> Username : {user.userName} </h2>
       </div>
+
+
        <div className="flex items-center justify-between space-x-4">
         <button 
           type='button'
@@ -50,6 +80,11 @@ function App() {
         <button className='text-sky-400'
           onClick={increment}>
           useState counter is : {counter} 
+        </button>
+
+        <button className='text-yellow-200'
+          onClick={updateUser}>
+          useState Username is : {user.userName} 
         </button>
      </div>
     </>
