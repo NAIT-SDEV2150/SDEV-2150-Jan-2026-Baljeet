@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import Course from './components/Course';
 
 
 function App() {
@@ -20,6 +21,9 @@ function App() {
   // Object state example
   // Storing multiple values inside ONE state object
   const [user,setUser]= useState({userName: "Baljeet", course : "SDEV", code: 2210});
+
+  // conditional rendering Toggle example
+  const [display, setDisplay] = useState(true);
 
   // Console logs to show how useState works internally
   console.log(`Myvar has two array elements :  ${myvar}`);
@@ -60,12 +64,19 @@ function App() {
          ...prev,                            // copy existing properties
          userName: "Baljeet Kaur"}));       // update only one field
   } 
+
+  function toggleDisplay()
+  {
+    setDisplay(!display);
+    
+  }
   return (
     <>
       <div className="flex items-center justify-between space-x-4">
         <h2> value of count is : {count} </h2> 
         <h2 className='text-sky-400'> value of counter is : {counter} </h2>
         <h2 className='text-yellow-200'> Username : {user.userName} </h2>
+        {/* {display ? <h2> SDEV 2026</h2> : null} */}
       </div>
 
 
@@ -86,7 +97,24 @@ function App() {
           onClick={updateUser}>
           useState Username is : {user.userName} 
         </button>
+        
+        
      </div>
+    <br/><br/>
+    {/*DISPLAY TOGGLE , conditional rendering*/}
+
+     <div className="flex items-center justify-between space-x-4">
+        {display ? <h2> SDEV 2026</h2> : null}   
+        {display ? <Course/> : null}  
+      </div>
+
+    <div className="flex items-center justify-between space-x-4">
+
+        <button className='text-white-200'
+              onClick={toggleDisplay}>
+              Toggle Display 
+          </button>
+    </div>
     </>
   )
 }
