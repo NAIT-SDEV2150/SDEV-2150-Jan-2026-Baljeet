@@ -52,9 +52,9 @@ export default function Filters(
               value={searchTerm}
             />
           </div>
-          {/* <p className="text-sm text-base-content/70">
+          <p className="text-sm text-base-content/70">
             Searching for: {searchTerm}
-          </p> */}
+          </p>
 
           <hr className="border-gray-200" />
 
@@ -65,7 +65,7 @@ export default function Filters(
                 <button
                   key={label}
                   type="button"
-                  className={`${selectedCategories.includes(label) && 'bg-sky-600 text-white'} rounded border border-sky-600 px-3 py-1 text-xs font-semibold text-sky-700 hover:bg-sky-50 hover:text-sky-900 focus:outline-none focus:ring-2 focus:ring-sky-200`}
+                  className={`${selectedCategories.includes(label.toLowerCase()) && 'bg-sky-600 text-white'} rounded border border-sky-600 px-3 py-1 text-xs font-semibold text-sky-700 hover:bg-sky-50 hover:text-sky-900 focus:outline-none focus:ring-2 focus:ring-sky-200`}
                   onClick={() => toggleCategory(label.toLowerCase())}
                 >
                   {label}

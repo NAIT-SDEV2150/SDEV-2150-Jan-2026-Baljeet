@@ -38,7 +38,12 @@ function App() {
           virtualOnly={virtualOnly} />
       </section>
       <aside className="md:col-span-1 lg:col-span-1">
-        <Details />
+        {selectedResource? (
+        <Details resource={selectedResource}  />
+        ):
+        (<div className="text-sm text-base-content/70">
+            Select a resource to view details.
+          </div>)}
       </aside>
     </PageLayout>
     // <PageLayout
