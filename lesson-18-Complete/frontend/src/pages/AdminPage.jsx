@@ -1,12 +1,21 @@
-import { useNavigate, useParams } from 'react-router';
-
 import { useResources } from '../hooks/useResources';
 import Card from '../components/ui/Card';
 import ResourceForm from '../components/ResourceForm';
+import { useNavigate, useParams } from 'react-router';
 
-// Now that the form has been moved into its own component, we can define a constant
-// for the default form data.
-const EMPTY_FORM_DATA = {
+
+
+export default function AdminPage() {
+  const { resources, isLoading, error, refetch } = useResources();
+  //read the parameter and create a navigate function:
+  const { resourceId } = useParams();   //This becomes the source of truth for whether the page is in create mode or edit mode.
+  const navigate = useNavigate();
+
+
+  // Track the current resource based on the URL param. If no resourceId is present, 
+  // currentResource will be null..
+
+  const EMPTY_FORM_DATA = {
   title: '',
   category: '',
   summary: '',
@@ -17,26 +26,19 @@ const EMPTY_FORM_DATA = {
   openNow: false,
 };
 
-export default function AdminPage() {
-  const { resourceId } = useParams();
-  const navigate = useNavigate();
+///Track the current resource based on the URL param. If no resourceId is present,
+// currentResource will be null..
 
-  const { resources, isLoading, error, refetch } = useResources();
 
-  // We no longer require a useEffect to track the current resource. Instead, we 
-  // can derive it directly from the URL param and the list of resources. If the 
-  // resourceId param is present, we find the corresponding resource from the list.
-  // If it's not present, currentResource will be null, which indicates that we're
-  // creating a new resource rather than editing an existing one.
-
-  // Track the current resource based on the URL param. If no resourceId is present, 
-  // currentResource will be null..
   const currentResource = resourceId
     ? resources.find((item) => item.id === resourceId)
     : null;
 
-  // Set the initial form data based on the current resource. If it's not null, use 
-  // the resource's data. Otherwise, use the empty form data.
+
+///Set the initial form data based on the current resource. 
+// If it's not null, use the resource's data. Otherwise, use the empty form data.
+
+
   const initialFormData = currentResource ? {
     title: currentResource.title,
     category: currentResource.category,
@@ -47,12 +49,19 @@ export default function AdminPage() {
     virtual: currentResource.virtual,
     openNow: currentResource.openNow,
   } : EMPTY_FORM_DATA;
+  
 
-  function handleEditStart(resource) {
-    navigate(`/admin/${resource.id}`);
-  }
+//clicking a resource should update the URL.
 
-  async function handleCreateResource(e, formData) {
+function handleEditStart(resource) {
+  navigate(`/admin/${resource.id}`);
+}
+
+/// We still want the same form to support both create and update behaviour.
+// The difference is that edit mode is now determined by `resourceId`. 
+// Update the submit handler:
+
+async function handleCreateResource(e, formData) {
     e.preventDefault();
     
     const isEditing = Boolean(resourceId);
@@ -80,10 +89,11 @@ export default function AdminPage() {
     navigate(`/admin/${savedResource.id}`);
   }
 
-  // Determine if we're in editing mode based on the presence of the resourceId param.
+    // Determine if we're in editing mode based on the presence of the resourceId param.
   const isEditing = Boolean(resourceId);
 
-  return (
+
+ return (
     <>
       <div>
         <h1 className="text-2xl font-bold">Admin</h1>

@@ -13,7 +13,7 @@
     },
     {
       "id": "counselling",
-      "title": "Counselling Services",
+      "title": "Counselling Services Updated",
       "category": "Wellness",
       "summary": "Confidential mental health supports.",
       "location": "Virtual and in-person",
@@ -91,6 +91,17 @@
     {
       "id": "res_1774387869539_odq1i0",
       "title": "Added new resource for testing",
+      "category": "",
+      "summary": "",
+      "location": "",
+      "hours": "",
+      "contact": "",
+      "virtual": false,
+      "openNow": false
+    },
+    {
+      "id": "res_1774398142025_4tzpay",
+      "title": "Added new resource in SDEV class on 24th March evening class",
       "category": "",
       "summary": "",
       "location": "",

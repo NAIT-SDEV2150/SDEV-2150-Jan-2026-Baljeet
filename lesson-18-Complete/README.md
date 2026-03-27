@@ -1,3 +1,5 @@
+# New Readme file for Lesson-18
+
 # Lesson 18: Dynamic Routes with React Router 7
 
 ## Install dependencies and run the dev server
@@ -126,85 +128,8 @@ This allows the same page component to handle:
 - create mode with no route parameter
 - edit mode with a `resourceId` route parameter
 
-## Phase 3: Read the route parameter in `AdminPage`
-
-Open `src/pages/AdminPage.jsx`.
-
-Import the routing hooks:
-
-```jsx
-import { useNavigate, useParams } from 'react-router';
-```
-
-Inside the component, read the parameter and create a navigate function:
-
-```jsx
-const { resourceId } = useParams();
-const navigate = useNavigate();
-```
-
-Now `resourceId` will contain:
-
-- `undefined` when the URL is `/admin`
-- the resource id when the URL is `/admin/:resourceId`
-
-This becomes the source of truth for whether the page is in create mode or edit mode.
-
-## Phase 4: Populate the form based on the route
-
-The admin page already fetches all resources.
-
-Use the route parameter plus the loaded resources list to determine which resource should be edited.
-
-Add this effect:
-
-```jsx
-useEffect(() => {
-  if (!resourceId) {
-    setFormData({
-      title: '',
-      category: '',
-      summary: '',
-      location: '',
-      hours: '',
-      contact: '',
-      virtual: false,
-      openNow: false,
-    });
-    return;
-  }
-
-  const resource = resources.find((item) => item.id === resourceId);
-
-  if (!resource) return;
-
-  setFormData({
-    title: resource.title,
-    category: resource.category,
-    summary: resource.summary,
-    location: resource.location,
-    hours: resource.hours,
-    contact: resource.contact,
-    virtual: resource.virtual,
-    openNow: resource.openNow,
-  });
-}, [resourceId, resources]);
-```
-
-This creates a route-driven form:
-
-- No parameter means blank form
-- A parameter means populate the form with the selected resource
-
-### Note: avoiding the cascading render warning
-
-You will see a warning like this:
-
-> Calling setState synchronously within an effect can trigger cascading renders
-
-there is a cleaner alternative to synchronizing form state inside `useEffect`.
-
-Instead of storing the form state directly in `AdminPage` and updating it in an effect, extract the form into its own component and initialize that form state when the component mounts.
+## Phase 3.1: extract the form into its own component `ResourceForm`
+extract the form into its own component and initialize that form state when the component mounts.
 
 For example:
 
@@ -262,20 +187,114 @@ Then render the form from `AdminPage` using a `key` tied to the route parameter:
 ```
 
 Because the `key` changes when the route changes, React remounts the form component and its internal state resets automatically.
+following is sample code:
 
-This avoids the cascading render warning while preserving the same route-driven behaviour.
+```jsx
+      <section className="md:col-span-3 lg:col-span-3">
+        <Card title="Resource Form">
+          <div className="card-body">
+            {resourceId && isLoading && <p>Loading selected resource...</p>}
 
-## Phase 5: Use route navigation instead of local edit state
+            {resourceId && !isLoading && !currentResource && (
+              <p className="text-sm text-red-600">
+                Selected resource could not be found.
+              </p>
+            )}
 
-In Lesson 17, edit mode may have been tracked with local state such as:
-
-```js
-const [editingId, setEditingId] = useState(null);
+            {/* Update to make use of the ResourceForm component */}
+            {(!resourceId || currentResource) && (
+              <ResourceForm
+                key={resourceId ?? 'new'}
+                initialData={initialFormData}
+                isEditing={isEditing}
+                onSubmit={handleCreateResource}
+                onReset={() => navigate('/admin')}
+              />
+            )}
+          </div>
+        </Card>
+      </section>
 ```
 
-For this lesson, the route parameter replaces that state.
+## Phase 3.2: Read the route parameter in `AdminPage`
 
-Instead of setting `editingId`, clicking a resource should update the URL.
+Open `src/pages/AdminPage.jsx`.
+
+```jsx
+import ResourceForm from '../components/ResourceForm';
+
+```
+
+Import the routing hooks:
+
+```jsx
+import { useNavigate, useParams } from 'react-router';
+```
+
+
+Inside the component, read the parameter and create a navigate function:
+
+```jsx
+const { resourceId } = useParams();
+const navigate = useNavigate();
+```
+
+Now `resourceId` will contain:
+
+- `undefined` when the URL is `/admin`
+- the resource id when the URL is `/admin/:resourceId`
+
+This becomes the source of truth for whether the page is in create mode or edit mode.
+
+## Phase 4: Populate the form based on the route
+
+The admin page already fetches all resources.
+
+Use the route parameter plus the loaded resources list to determine which resource should be edited.
+
+Now that the form has been moved into its own component, we can define a constant
+for the default form data. 
+```jsx
+
+const EMPTY_FORM_DATA = {
+  title: '',
+  category: '',
+  summary: '',
+  location: '',
+  hours: '',
+  contact: '',
+  virtual: false,
+  openNow: false,
+};
+
+```
+Track the current resource based on the URL param. If no resourceId is present, 
+currentResource will be null..
+
+```jsx
+  const currentResource = resourceId
+    ? resources.find((item) => item.id === resourceId)
+    : null;
+```
+
+Set the initial form data based on the current resource. If it's not null, use 
+the resource's data. Otherwise, use the empty form data.
+
+```jsx
+  const initialFormData = currentResource ? {
+    title: currentResource.title,
+    category: currentResource.category,
+    summary: currentResource.summary,
+    location: currentResource.location,
+    hours: currentResource.hours,
+    contact: currentResource.contact,
+    virtual: currentResource.virtual,
+    openNow: currentResource.openNow,
+  } : EMPTY_FORM_DATA;
+  ```
+
+clicking a resource should update the URL.
+## Phase 5: Use route navigation 
 
 Example:
 
@@ -297,10 +316,9 @@ Update the resource list so each item can enter edit mode by navigating:
   <p className="text-sm text-base-content/70">{resource.category}</p>
 </li>
 ```
-
 Now the URL updates when a resource is selected.
 
-## Phase 6: Update the submit handler for create vs edit
+## Phase 6: Add the submit handler for create vs edit
 
 We still want the same form to support both create and update behaviour.
 
@@ -309,34 +327,34 @@ The difference is that edit mode is now determined by `resourceId`.
 Update the submit handler:
 
 ```jsx
-async function handleSubmit(e) {
-  e.preventDefault();
+async function handleCreateResource(e, formData) {
+    e.preventDefault();
+    
+    const isEditing = Boolean(resourceId);
+    const url = isEditing
+      ? `http://localhost:3000/resources/${resourceId}`
+      : 'http://localhost:3000/resources';
 
-  const isEditing = Boolean(resourceId);
-  const url = isEditing
-    ? `http://localhost:3000/resources/${resourceId}`
-    : 'http://localhost:3000/resources';
+    const method = isEditing ? 'PUT' : 'POST';
 
-  const method = isEditing ? 'PUT' : 'POST';
+    const res = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
 
-  const res = await fetch(url, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(formData),
-  });
+    if (!res.ok) {
+      throw new Error(`Could not ${isEditing ? 'update' : 'create'} resource`);
+    }
 
-  if (!res.ok) {
-    throw new Error(`Could not ${isEditing ? 'update' : 'create'} resource`);
+    const savedResource = await res.json();
+    await refetch();
+
+    navigate(`/admin/${savedResource.id}`);
   }
-
-  const savedResource = await res.json();
-  await refetch();
-
-  navigate(`/admin/${savedResource.id}`);
-}
-```
+  ```
 
 Important behaviour:
 
@@ -344,6 +362,13 @@ Important behaviour:
 - Creating a new resource redirects to the new resource route
 
 This means the URL always reflects the resource shown in the form.
+
+Determine if we're in editing mode based on the presence of the resourceId param.
+
+```jsx
+  const isEditing = Boolean(resourceId);
+```
+
 
 ## Phase 7: Add a route-aware cancel or reset action
 
@@ -391,8 +416,6 @@ Then render route-aware labels:
   {isEditing ? 'Update Resource' : 'Add Resource'}
 </button>
 ```
-
-This makes the route state visible to the user.
 
 ## Phase 9: Optional single-resource fetch discussion
 
